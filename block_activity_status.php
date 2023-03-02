@@ -62,37 +62,19 @@ class block_activity_status extends block_list {
             if (!array_key_exists($cm->modname, $archetypes)) {
                 $archetypes[$cm->modname] = plugin_supports('mod', $cm->modname, FEATURE_MOD_ARCHETYPE, MOD_ARCHETYPE_OTHER);
             }
-            if ($archetypes[$cm->modname] == MOD_ARCHETYPE_RESOURCE) {
-                if (!array_key_exists('resources', $modfullnames)) {
-                    $modfullnames['resources'] = get_string('resources');
-                }
-            } else {
-                $activitywithurl = '<a href="'.$CFG->wwwroot.'/mod/'.$cm->modname.'/view.php?id='.$cm->id.'">'.$cm->name.'</a>';
-                $cmid = $cm->id;
-                $timecreated = date('d-M-Y', $cm->added);
-                $activitystatus = $DB->record_exists('course_modules_completion', array('coursemoduleid' => $cmid,
-                                    'userid' => $USER->id, 'completionstate' => 1));
-                $activitycompletionstatus = $activitystatus ? '- Completed' : '';
-                $this->content->items[] = $cmid.'-'.$activitywithurl.'-'.$timecreated.$activitycompletionstatus;
-            }
+            $activitywithurl = '<a href="'.$CFG->wwwroot.'/mod/'.$cm->modname.'/view.php?id='.$cm->id.'">'.$cm->name.'</a>';
+            $cmid = $cm->id;
+            $timecreated = date('d-M-Y', $cm->added);
+            $activitystatus = $DB->record_exists('course_modules_completion', array('coursemoduleid' => $cmid,
+                                'userid' => $USER->id, 'completionstate' => 1));
+            $activitycompletionstatus = $activitystatus ? '- Completed' : '';
+            $this->content->items[] = $cmid.'-'.$activitywithurl.'-'.$timecreated.$activitycompletionstatus;
         }
         return $this->content;
     }
 
-    /**
-     * Returns the role that best describes this blocks contents.
-     *
-     * This returns 'navigation' as the blocks contents is a list of links to activities and resources.
-     *
-     * @return string 'navigation'
-     */
-    public function get_aria_role() {
-        return 'navigation';
-    }
-
     public function applicable_formats() {
-        return array('all' => true, 'mod' => false, 'my' => false, 'admin' => false,
-                     'tag' => false);
+        return array('course-view' => true);
     }
 }
 
